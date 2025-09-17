@@ -42,13 +42,38 @@ C = 15</br>
 Oui C est compris entre A et B</p>
 
 <p>
-    <% String valeur1 = request.getParameter("valeur1"); %>
-    <% String valeur2 = request.getParameter("valeur2"); %>
-    <% String valeur3 = request.getParameter("valeur3"); %>
+    <% String val1 = request.getParameter("valeur1"); %>
+    <% String val2 = request.getParameter("valeur2"); %>
+    <% String val3 = request.getParameter("valeur3"); %>
+
+    <% int A = Integer.parseInt(val1); %>
+    <% int B = Integer.parseInt(val2); %>
+    <% int C = Integer.parseInt(val3); %>
+
+    <% int min = Math.min(A, B);%>
+    <% int max = Math.max(A, B);%>
+
+    <% if (C >= min && C <= max) { %>
+        <%= "C est compris entre A et B"%>
+    <%} else {%>
+        <%= "C n'est pas compris entre A et B"%>
+    <%}%>
+
 </p>
 
 <h2>Exercice 2 : Pair ou Impair ?</h2>
 <p>Écrivez un programme pour vérifier si un nombre est pair ou impair en utilisant une structure if</p>
+
+<p>
+    <% String val = request.getParameter("valeur1"); %>
+    <% int intVal = Integer.parseInt(val); %>
+
+    <% if (intVal%2 == 0) {%>
+        <%= "La valeur entree est pair"%>
+    <%} else {%>
+        <%= "La valeur entree est impair"%>
+    <%}%>
+</p>
 
 <% } %>
 <p><a href="index.html">Retour au sommaire</a></p>
