@@ -1,4 +1,10 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%!
+  private String esc(String s){
+    if(s==null) return "";
+    return s.replace("&","&amp;").replace("<","&lt;").replace(">","&gt;");
+  }
+%>
 <html>
 <head>
 <title>Les chaines</title>
@@ -9,64 +15,107 @@
     <p>Saisir une chaine (Du texte avec 6 caractères minimum) : <input type="text" id="inputValeur" name="chaine">
     <p><input type="submit" value="Afficher">
 </form>
-<%-- Récupération des valeurs --%>
-    <% String chaine = request.getParameter("chaine"); %>
-    
-    <% if (chaine != null) { %>
+<% String chaine = request.getParameter("chaine"); %>
 
-    <%-- Obtention de la longueur de la chaîne --%>
-    <% int longueurChaine = chaine.length(); %>
-    <p>La longueur de votre chaîne est de <%= longueurChaine %> caractères</p>
+<% if (chaine != null) { %>
+<% if (chaine.length() < 6) { %>
+  <p style="color:red;">Veuillez saisir au moins 6 caractères.</p>
+<% } else { %>
 
-    <%-- Extraction du 3° caractère dans votre chaine --%>
-    <% char caractereExtrait = chaine.charAt(2); %>
-    <p>Le 3° caractère de votre chaine est la lettre <%= caractereExtrait %></p>
+<% int longueurChaine = chaine.length(); %>
+<p>La longueur de votre chaîne est de <%= longueurChaine %> caractères</p>
 
-    <%-- Obtention d'une sous-chaîne --%>
-    <% String sousChaine = chaine.substring(2, 6); %>
-    <p>Une sous chaine de votre texte : <%= sousChaine %></p>
+<% char caractereExtrait = chaine.charAt(2); %>
+<p>Le 3° caractère de votre chaine est la lettre <%= esc(String.valueOf(caractereExtrait)) %></p>
 
-    <%-- Recharche de la lettre "e" --%>
-    <% char recherche = 'e'; 
-       int position = chaine.indexOf(recherche); %>
-    <p>Votre premier "e" est en : <%= position %></p>
+<% String sousChaine = chaine.substring(2, 6); %>
+<p>Une sous chaine de votre texte : <%= esc(sousChaine) %></p>
 
-    
+<% char recherche = 'e';
+   int position = chaine.indexOf(recherche); %>
+<p>Votre premier "e" est en : <%= position %></p>
+
 <h2>Exercice 1 : Combien de 'e' dans notre chaine de charactère ?</h2>
-<p>Ecrire un programme pour compter le nombre de lettre e dans votre chaine de charactères</p>
+<%
+  int nbE = 0;
+  for (int i = 0; i < chaine.length(); i++) {
+    if (chaine.charAt(i) == 'e') nbE++;
+  }
+%>
+<p>Nombre de 'e' : <%= nbE %></p>
 
 <h2>Exercice 2 : Affichage verticale</h2>
-<p>Ecrire le programme pour afficher le texte en vertical</br>
-Exemple : Bonjour</br>
-B</br>
-o</br>
-n</br>
-j</br>
-o</br>
-u</br>
-r</p>
+<p>
+<%
+  for (int i = 0; i < chaine.length(); i++) {
+    out.print(esc(String.valueOf(chaine.charAt(i))) + "<br/>");
+  }
+%>
+</p>
 
 <h2>Exercice 3 : Retour à la ligne</h2>
-<p>La présence d'un espace provoque un retour à la ligne </br>
-Exemple : L'hiver sera pluvieux</br>
-L'hiver</br>
-sera</br>
-pluvieux</p>
+<p>
+<%
+  String mot = "";
+  for (int i = 0; i < chaine.length(); i++) {
+    char c = chaine.charAt(i);
+    if (c == ' ') {
+      if (!mot.isEmpty()) { out.print(esc(mot) + "<br/>"); mot = ""; }
+    } else {
+      mot += c;
+    }
+  }
+  if (!mot.isEmpty()) out.print(esc(mot) + "<br/>");
+%>
+</p>
 
 <h2>Exercice 4 : Afficher une lettre sur deux</h2>
-<p>Ecrire le programme pour afficher seulement une lettre sur deux de votre texte </br>
-Exemple : L'hiver sera pluvieux</br>
-Lhvrsr lvex</p>
+<p>
+<%
+  String uneSurDeux = "";
+  for (int i = 0; i < chaine.length(); i += 2) {
+    uneSurDeux += chaine.charAt(i);
+  }
+  out.print(esc(uneSurDeux));
+%>
+</p>
 
 <h2>Exercice 5 : La phrase en verlant</h2>
-<p>Ecrire le programme afin d'afficher le texte en verlant </br>
-Exemple : L'hiver sera pluvieux</br>
-xueivulp ares revih'l</p>
+<p>
+<%
+  String reverse = "";
+  for (int i = chaine.length() - 1; i >= 0; i--) {
+    char c = chaine.charAt(i);
+    if (c == '’') c = '\'';
+    reverse += c;
+  }
+  out.print(esc(reverse));
+%>
+</p>
 
 <h2>Exercice 6 : Consonnes et voyelles</h2>
-<p>Ecrire le programme afin de compter les consonnes et les voyelles dans votre texte</p>
+<%
+  String norm = chaine
+    .toLowerCase()
+    .replace('à','a').replace('â','a').replace('ä','a')
+    .replace('é','e').replace('è','e').replace('ê','e').replace('ë','e')
+    .replace('î','i').replace('ï','i')
+    .replace('ô','o').replace('ö','o')
+    .replace('ù','u').replace('û','u').replace('ü','u')
+    .replace('ÿ','y');
+  int voyelles = 0, consonnes = 0;
+  for (int i = 0; i < norm.length(); i++) {
+    char c = norm.charAt(i);
+    if (c >= 'a' && c <= 'z') {
+      if (c=='a'||c=='e'||c=='i'||c=='o'||c=='u'||c=='y') voyelles++;
+      else consonnes++;
+    }
+  }
+%>
+<p>Voyelles : <%= voyelles %> — Consonnes : <%= consonnes %></p>
 
-<% } %>
+<% } } %>
+
 <p><a href="index.html">Retour au sommaire</a></p>
 </body>
 </html>
